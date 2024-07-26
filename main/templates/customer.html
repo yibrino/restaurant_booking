@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #f4f4f4, #e0e0e0);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .login-container {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .register-container{
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 16px;
+        color: #333;
+      }
+      .login-container h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 28px;
+        color: #333;
+      }
+      .login-container form {
+        display: flex;
+        flex-direction: column;
+      }
+      .login-container form input {
+        margin-bottom: 15px;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+      .login-container form input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+        outline: none;
+      }
+      .login-container form button {
+        padding: 12px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+      .login-container form button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+      }
+      .login-container form button:active {
+        background-color: #004085;
+        transform: translateY(0);
+      }
+
+      .message {
+        background-color: #dff0d8;
+        color: #3c763d;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        position: relative;
+        display: none; /* Initially hidden */
+      }
+      .message-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: #3c763d;
+        cursor: pointer;
+      }
+      .message-close:hover {
+        color: #2a6436;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        .login-container {
+          padding: 20px;
+        }
+        .login-container h2 {
+          font-size: 24px;
+        }
+        .login-container form input,
+        .login-container form button {
+          font-size: 14px;
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="message" id="message">
+        <button class="message-close" onclick="closeMessage()">×</button>
+        <p id="message-text"></p>
+      </div>
+      <h1>Log In</h1>
+      <div class="register-container">
+        <span class="register-text">Don't have an account?</span>
+        <a href="{% url 'customer_register' %}" class="register" >Register</a>
+      </div>
+      <form id="login-form" onsubmit="loginCustomer(event)">
+        <input type="email" name="email" placeholder="Email" required />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+
+    <script>
+      async function loginCustomer(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const form = event.target;
+        const email = form.email.value;
+        const password = form.password.value;
+
+        const data = {
+          customer_email: email,
+          password: password,
+        };
+
+        console.log("login data", data);
+
+        try {
+          const response = await fetch(
+            "http://127.0.0.1:8000/api/customer/login/", // Adjust endpoint as needed
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            }
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+
+            // Save email in local storage
+            localStorage.setItem("customerEmail", email);
+
+            showMessage("Login successful!");
+            window.location.href = "http://127.0.0.1:8000/customer/dashboard/";
+            // Redirect to home or dashboard
+          } else {
+            const result = await response.json();
+            showMessage(result.error);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred. Please try again.");
+        }
+      }
+
+      function showMessage(text) {
+        const messageElement = document.getElementById("message");
+        const messageTextElement = document.getElementById("message-text");
+
+        messageTextElement.textContent = text;
+        messageElement.style.display = "block";
+
+        setTimeout(() => {
+          messageElement.style.display = "none";
+        }, 10000); // Hide after 10 seconds
+      }
+
+      function closeMessage() {
+        document.getElementById("message").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

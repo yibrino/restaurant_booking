@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Dashboard</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column; /* Position content below the fixed navbar */
+        height: 100vh;
+        overflow: hidden; /* Prevent scrolling of body */
+      }
+
+      .navbar {
+        display: flex;
+        background-color: #333;
+        overflow: hidden;
+        position: fixed; /* Fix navbar at the top */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px; /* Adjust height as needed */
+        z-index: 1000; /* Ensure navbar is above other content */
+        align-items: center; /* Vertically center items within the navbar */
+        justify-content: center; /* Center items horizontally */
+      }
+
+      .navbar a {
+        color: white;
+        padding: auto;
+        padding: 0 20px; /* Horizontal padding, adjust as needed */
+        text-align: center;
+        text-decoration: none;
+        align-items: center; /* Vertically center items within the navbar */
+
+        display: flex;
+        align-items: center; /* Vertically center text within link */
+        height: 100%; /* Make the link height match the navbar height */
+      }
+
+      .navbar a:hover,
+      .navbar a.active {
+        background-color: #ddd; /* Change to the desired hover/active color */
+        color: black;
+      }
+
+      .navbar a.active {
+        background-color: #555; /* Change to the desired active color */
+        color: white; /* Ensure text color is readable against the background */
+      }
+
+      .container {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        box-sizing: border-box;
+        flex: 1; /* Allow container to grow and take remaining space */
+        overflow-y: auto; /* Enable vertical scrolling within container */
+        height: calc(100vh - 60px); /* Adjust height to fill remaining space */
+      }
+
+      .message {
+        background-color: #dff0d8;
+        color: #3c763d;
+        padding: 15px;
+        margin-top: 60px;
+        top: 16px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+        display: none; /* Initially hidden */
+        position: relative;
+      }
+
+      .message-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .tab {
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 0 10px;
+      }
+      .tab.active {
+        background-color: #0056b3;
+      }
+      .content {
+        display: none;
+      }
+      .content.active {
+        display: block;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      .form-group input,
+      .form-group select {
+        width: calc(100% - 30px);
+        padding: 15px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ccc;
+      }
+      th,
+      td {
+        padding: 15px;
+        text-align: left;
+      }
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+      button[type="submit"] {
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .btn-update {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+      .btn-cancel {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        margin-top: 25px;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        width: 80%;
+        max-width: 600px;
+        position: relative;
+      }
+      .modal-content h2 {
+        margin-top: 0;
+      }
+      .modal-content button.close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .message {
+        background-color: #dff0d8;
+        color: #3c763d;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+        display: none; /* Initially hidden */
+        position: relative;
+      }
+      .message-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      .navbar {
+        display: flex;
+        background-color: #333;
+        overflow: hidden;
+      }
+      .navbar a {
+        flex: 1;
+        padding: 14px 20px;
+        margin-top: 20px;
+        text-align: center;
+        text-decoration: none;
+        color: white;
+        transition: background-color 0.3s;
+      }
+      .navbar a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+      .content {
+        padding: 20px;
+      }
+      .view {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar">
+        <a onclick="showView('new-booking-content')">New Booking</a>
+        <a onclick="showView('my-bookings-content')">My Bookings</a>
+        <a onclick="logout()">Logout</a>
+      </div>
+
+      <!-- <div class="tabs">
+        <button
+          class="tab active"
+          id="new-booking-tab"
+          onclick="showTab('new-booking')"
+        >
+          New Booking
+        </button>
+        <button
+          class="tab"
+          id="my-bookings-tab"
+          onclick="showTab('my-bookings')"
+        >
+          My Bookings
+        </button>
+      </div> -->
+      <div class="message" id="message">
+        <button class="message-close" onclick="closeMessage()">×</button>
+        <p id="message-text"></p>
+      </div>
+      <div class="content active" id="new-booking-content">
+        <h2 style="text-align: center; margin-bottom: 20px; font-size: 24px">
+          Book a Table
+        </h2>
+        <form id="book-table-form" onsubmit="bookTable(event)">
+          <div class="form-group">
+            <label for="table">Table</label>
+            <select id="table" name="table" required>
+              <option value="" disabled selected>Select a table:</option>
+              <!-- Table options will be dynamically populated here -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required />
+          </div>
+          <div class="form-group">
+            <label for="time">Time</label>
+            <input type="time" id="time" name="time" value="10:00" required />
+          </div>
+          <div class="form-group">
+            <label for="guests">Number of Guests</label>
+            <input type="number" id="guests" name="guests" min="1" required />
+          </div>
+          <button type="submit">Book</button>
+        </form>
+      </div>
+      <div class="content" id="my-bookings-content">
+        <h2 style="text-align: center; margin-bottom: 20px; font-size: 24px">
+          My Bookings
+        </h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Table</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Guests</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="booking-list">
+            <!-- Booking rows will be dynamically added here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Update Booking Modal -->
+    <div class="modal" id="update-booking-modal">
+      <div class="modal-content">
+        <button class="close" onclick="closeModal()">×</button>
+        <h2>Update Booking</h2>
+        <form id="update-booking-form" onsubmit="updateBookingSubmit(event)">
+          <input type="hidden" id="update-booking-id" />
+          <div class="form-group">
+            <label for="update-table">Table</label>
+            <select id="update-table" name="table" required>
+              <option value="" disabled selected>Select a table:</option>
+              <!-- Table options will be dynamically populated here -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="update-date">Date</label>
+            <input type="date" id="update-date" name="date" required />
+          </div>
+          <div class="form-group">
+            <label for="update-time">Time</label>
+            <input type="time" id="update-time" name="time" required />
+          </div>
+          <div class="form-group">
+            <label for="update-guests">Number of Guests</label>
+            <input
+              type="number"
+              id="update-guests"
+              name="guests"
+              min="1"
+              required
+            />
+          </div>
+          <button type="submit">Update</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let maximum_guest;
+      if (!localStorage.getItem("customerEmail")) {
+        showMessage("Pease Login first");
+        window.location.href = "http://127.0.0.1:8000/";
+      }
+      // Function to show tab content based on selected tab
+      function showTab(tabName) {
+        const tabs = document.querySelectorAll(".tab");
+        const contents = document.querySelectorAll(".content");
+        tabs.forEach((tab) => tab.classList.remove("active"));
+        contents.forEach((content) => content.classList.remove("active"));
+        document.getElementById(tabName + "-tab").classList.add("active");
+        document.getElementById(tabName + "-content").classList.add("active");
+      }
+      // Function to close the alert message
+      function closeMessage() {
+        document.getElementById("message").style.display = "none";
+      }
+
+      // Function to show the alert message with custom text
+      function showMessage(text) {
+        const messageElement = document.getElementById("message");
+        const messageTextElement = document.getElementById("message-text");
+
+        messageTextElement.textContent = text;
+        messageElement.style.display = "block";
+
+        setTimeout(() => {
+          messageElement.style.display = "none";
+        }, 10000); // Hide after 5 seconds
+      }
+      // Function to fetch customer ID based on email
+      function getCustomerId(email) {
+        return fetch(`http://127.0.0.1:8000/api/customers/`)
+          .then((response) => response.json())
+          .then((data) => {
+            const customer = data.find(
+              (customer) => customer.customer_email === email
+            );
+            if (customer) {
+              return customer.customer_id;
+            } else {
+              throw new Error("Customer not found.");
+            }
+          });
+      }
+
+      // Function to fetch and populate table options
+      function populateTableOptions() {
+        return fetch("http://127.0.0.1:8000/api/tables/")
+          .then((response) => response.json())
+          .then((tables) => {
+            const tableSelects = document.querySelectorAll(
+              "#table, #update-table"
+            );
+            tableSelects.forEach((select) => {
+              select.innerHTML =
+                '<option value="" disabled selected>Select a table:</option>'; // Reset options
+              tables.forEach((table) => {
+                const option = document.createElement("option");
+                option.value = table.table_id; // or any unique identifier from your API
+                option.textContent = `${table.table_name} (${table.table_max_guests} persons)`; // Customize as needed
+                select.appendChild(option);
+              });
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching tables:", error);
+            alert("An error occurred while fetching table options.");
+          });
+      }
+
+      function showView(viewId) {
+        document.querySelectorAll(".content").forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.getElementById(viewId).classList.add("active");
+        document.querySelectorAll(".navbar a").forEach((link) => {
+          link.classList.remove("active");
+        });
+        document
+          .querySelector(`.navbar a[onclick="showView('${viewId}')"]`)
+          .classList.add("active");
+      }
+      function logout() {
+        // Remove the customer email from local storage
+        localStorage.removeItem("adminEmail");
+
+        window.location.href = "http://127.0.0.1:8000/";
+        // Redirect to the homepage page
+      }
+      // Function to validate the number of guests against the table's max capacity
+      function validateGuestCount(tableid) {
+        return fetch("http://127.0.0.1:8000/api/tables/")
+          .then((response) => response.json())
+          .then((data) => {
+            const table = data.find((table) => table.table_id === tableid);
+            if (table) {
+              return table.table_max_guests;
+            } else {
+              throw new Error("Table not found.");
+            }
+          });
+      }
+
+      // Example usage
+
+      // Function to book a table
+      // Function to book a table
+      function bookTable(event) {
+        event.preventDefault();
+        const table = parseInt(document.getElementById("table").value, 10);
+        const booktable_date = document.getElementById("date").value;
+        const booktable_time = document.getElementById("time").value;
+        const booktable_guests = parseInt(
+          document.getElementById("guests").value,
+          10
+        );
+
+        // Validate guest count before proceeding
+        validateGuestCount(table)
+          .then((maxGuests) => {
+            if (booktable_guests > maxGuests) {
+              showMessage(
+                "Number of guests should be less than or equal to the maximum allowed for this table."
+              );
+              return; // Stop execution if guest count exceeds maximum
+            }
+            // Continue with booking if validation passes
+            const customerEmail = localStorage.getItem("customerEmail");
+            return getCustomerId(customerEmail)
+              .then((customerId) => {
+                const bookingData = {
+                  table: table,
+                  customer: customerId,
+                  booktable_date: booktable_date,
+                  booktable_time: booktable_time,
+                  booktable_guests: booktable_guests,
+                };
+                console.log("Booking Data", bookingData);
+
+                return fetch("http://127.0.0.1:8000/api/booktable/create/", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(bookingData),
+                });
+              })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.error) {
+                  showMessage(data.error);
+                } else {
+                  showMessage("Booking added successfully!");
+                  fetchBookings(); // Refresh bookings
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                alert("An error occurred while booking the table.");
+              });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while validating guest count.");
+          });
+      }
+
+      // Function to fetch and display bookings
+      function fetchBookings() {
+        const email = localStorage.getItem("customerEmail");
+        if (!email) {
+          showMessage("No customer email found in local storage.");
+
+          return;
+        }
+
+        let tablesMap = {};
+
+        // Function to fetch and map table names
+        function getTablesMap() {
+          return fetch(`http://127.0.0.1:8000/api/tables/`)
+            .then((response) => response.json())
+            .then((tables) => {
+              // Map table IDs to table names
+              tables.forEach((table) => {
+                tablesMap[table.table_id] = table.table_name; // Adjust if your API uses different field names
+              });
+            });
+        }
+
+        // Fetch customer ID, tables map, and bookings
+        getCustomerId(email)
+          .then((customerId) => {
+            return getTablesMap()
+              .then(() => {
+                return fetch(`http://127.0.0.1:8000/api/booktables/`);
+              })
+              .then((response) => response.json())
+              .then((bookings) => {
+                const tbody = document.getElementById("booking-list");
+                tbody.innerHTML = ""; // Clear previous bookings
+
+                // Filter bookings based on customer ID
+                const filteredBookings = bookings.filter(
+                  (booking) => booking.customer === customerId
+                );
+
+                console.log("My Booking", filteredBookings);
+
+                // Process and display each filtered booking
+                filteredBookings.forEach((booking) => {
+                  const tableName = tablesMap[booking.table] || "Unknown Table";
+                  const row = document.createElement("tr");
+                  row.innerHTML = `
+                                  <td>${tableName}</td>
+                                  <td>${booking.booktable_date}</td>
+                                  <td>${booking.booktable_time}</td>
+                                  <td>${booking.booktable_guests}</td>
+                                  <td>
+                                      <button class="btn-update" onclick="updateBooking(${booking.booktable_id})">Edit</button>
+                                      <button class="btn-cancel" onclick="cancelBooking(${booking.booktable_id})">Cancel</button>
+                                  </td>
+                              `;
+                  tbody.appendChild(row);
+                });
+              });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while fetching bookings.");
+          });
+      }
+
+      // Function to update a booking
+
+      // Function to submit updated booking
+      function updateBooking(bookingId) {
+        fetch(`http://127.0.0.1:8000/api/booktable/${bookingId}/`)
+          .then((response) => response.json())
+          .then((booking) => {
+            document.getElementById("update-booking-id").value = bookingId;
+            document.getElementById("update-table").value = booking.table;
+            document.getElementById("update-date").value =
+              booking.booktable_date;
+            document.getElementById("update-time").value =
+              booking.booktable_time;
+            document.getElementById("update-guests").value =
+              booking.booktable_guests;
+            document.getElementById("update-booking-modal").style.display =
+              "flex";
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while fetching booking details.");
+          });
+      }
+
+      // Function to submit updated booking
+      function updateBookingSubmit(event) {
+        event.preventDefault();
+
+        // Extract values from the form
+        const bookingId = document.getElementById("update-booking-id").value;
+        const table = parseInt(
+          document.getElementById("update-table").value,
+          10
+        );
+        const booktable_date = document.getElementById("update-date").value;
+        const booktable_time = document.getElementById("update-time").value;
+        const booktable_guests = parseInt(
+          document.getElementById("update-guests").value,
+          10
+        );
+
+        // Function to fetch table details
+
+        // Fetch maximum guest count and validate
+        validateGuestCount(table)
+          .then((maxGuests) => {
+            if (maxGuests === null) {
+              return; // Exit if table details could not be fetched
+            }
+
+            // Check if the guest count exceeds the maximum allowed
+            if (booktable_guests > maxGuests) {
+              showMessage(
+                "Number of guests should be less than or equal to the maximum allowed for this table."
+              );
+              return; // Stop execution if guest count exceeds maximum
+            }
+
+            // Proceed with updating the booking if validation is successful
+            const updatedData = {
+              table: table,
+              booktable_date: booktable_date,
+              booktable_time: booktable_time,
+              booktable_guests: booktable_guests,
+            };
+
+            fetch(`http://127.0.0.1:8000/api/booktable/update/${bookingId}/`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(updatedData),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.error) {
+                  showMessage(data.error);
+                } else {
+                  showMessage("Booking updated successfully!");
+                  fetchBookings(); // Refresh bookings
+                }
+                closeModal(); // Close the modal after update or error
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                alert("An error occurred while updating the booking.");
+                closeModal(); // Close the modal in case of error
+              });
+          })
+          .catch((error) => {
+            console.error("Error during validation:", error);
+            alert("An error occurred while validating guest count.");
+          });
+      }
+
+      // Function to close the modal
+      function closeModal() {
+        document.getElementById("update-booking-modal").style.display = "none";
+      }
+
+      // Function to cancel a booking
+      function cancelBooking(bookingId) {
+        // Confirm cancellation
+        {
+          console.log("Booking Id", bookingId);
+          fetch(`http://127.0.0.1:8000/api/booktable/${bookingId}/`, {
+            method: "DELETE",
+          })
+            .then((response) => {
+              // Log the response status and headers
+              console.log("Response status:", response.status);
+              console.log("Response headers:", response.headers);
+
+              // Check if the response status indicates success
+              if (response.ok) {
+                return response.text().then((text) => {
+                  console.log("Response text:", text);
+                  return text ? JSON.parse(text) : {};
+                });
+              } else {
+                return response.text().then((text) => {
+                  console.log("Response error text:", text);
+                  try {
+                    const errorData = JSON.parse(text);
+                    throw errorData;
+                  } catch (err) {
+                    throw new Error(text);
+                  }
+                });
+              }
+            })
+            .then((data) => {
+              if (data.error) {
+                showMessage(data.error);
+              } else {
+                showMessage("Booking cancelled successfully!");
+                fetchBookings(); // Refresh bookings after cancellation
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("An error occurred while cancelling the booking.");
+            });
+        }
+      }
+
+      // Function to close the modal
+      function closeModal() {
+        document.getElementById("update-booking-modal").style.display = "none";
+      }
+
+      // Fetch and populate table options and bookings on page load
+      document.addEventListener("DOMContentLoaded", () => {
+        const email = localStorage.getItem("customerEmail");
+        console.log("Customer Email from localStorage:", email);
+
+        // Populate table options
+        populateTableOptions();
+
+        // Fetch and display bookings if the user is logged in
+        if (email) {
+          fetchBookings();
+        }
+      });
+      window.onload = function () {
+        populateTableOptions();
+        showView("new-booking-content"); // Show the default view
+        displayBookings();
+      };
+    </script>
+  </body>
+</html>

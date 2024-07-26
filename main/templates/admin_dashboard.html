@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7f8;
+      }
+      .navbar {
+        display: flex;
+        background-color: #333;
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+      }
+      .navbar a {
+        flex: 1;
+        padding: 14px 20px;
+        text-align: center;
+        text-decoration: none;
+        color: white;
+        transition: background-color 0.3s;
+      }
+      .navbar a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+      .content {
+        padding: 20px;
+        padding-top: 60px; /* Add padding to prevent content from being hidden behind navbar */
+      }
+      .view {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      .form-container {
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .form-container h2 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+      .form-container label {
+        display: block;
+        margin-bottom: 8px;
+        color: #666;
+      }
+      .form-container input,
+      .form-container select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .form-container button {
+        width: 100%;
+        padding: 10px;
+        background-color: #5cb85c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .form-container button:hover {
+        background-color: #4cae4c;
+      }
+      
+      .message {
+        background-color: #dff0d8;
+        color: #3c763d;
+        padding: 15px;
+        margin-top: 60px;
+        top: 16px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+        display: none; /* Initially hidden */
+        position: relative;
+      }
+
+      .message-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .actions button {
+        padding: 5px 10px;
+        margin: 0 5px;
+        border: none;
+        color: white;
+        cursor: pointer;
+      }
+      .edit-btn {
+        background-color: #f0ad4e;
+      }
+      .delete-btn {
+        background-color: #d9534f;
+      }
+      .reserve-btn {
+        background-color: #5cb85c;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+      @media (max-width: 600px) {
+        .form-container input,
+        .form-container button,
+        .form-container select {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="#" onclick="showView('registerTables')">Register Tables</a>
+      <a href="#" onclick="showView('viewRegisteredTables')"
+        >View Registered Tables</a
+      >
+      <a href="#" onclick="showView('viewRegisteredCustomers')"
+        >View Registered Customers</a
+      >
+      <a href="#" onclick="showView('viewReservedTables')"
+        >View Reserved Tables</a
+      >
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+ <div class="message" id="message">
+        <button class="message-close" onclick="closeMessage()">×</button>
+        <p id="message-text"></p>
+      </div>
+    <div class="content">
+      <div id="registerTables" class="view active">
+        <div class="form-container">
+          <h2>Register a Table</h2>
+          <form id="registerTableForm">
+            <input type="hidden" id="table_id" />
+            <label for="table_name">Table Name:</label>
+            <input type="text" id="table_name" name="table_name" required />
+
+            <label for="table_max_guests">Maximum Guests:</label>
+            <input
+              type="number"
+              id="table_max_guests"
+              name="table_max_guests"
+              required
+            />
+
+            <button id="registerTableButton" type="submit">Register Table</button>
+          </form>
+        </div>
+      </div>
+      <div id="viewRegisteredTables" class="view">
+        <h2>View Registered Tables</h2>
+        <table id="tablesList">
+          <thead>
+            <tr>
+              <th>Table ID</th>
+              <th>Table Name</th>
+              <th>Max Guests</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div id="viewRegisteredCustomers" class="view">
+        <h2>View Registered Customers</h2>
+   <button class="reserve-btn" onclick="showView('registerCustomer')">Register New Customer</button>
+        <table id="reservedCustomersList">
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer name</th>
+                    <th>customer email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamically populated -->
+            </tbody>
+        </table>
+    </div>
+    <div id="registerCustomer" class="view">
+        <div class="form-container">
+            <h2>Register Customer</h2>
+            <form id="registerCustomerForm">
+                <input type="hidden"   id="customertest_id">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required />
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required />
+                <label for="password1">Password</label>
+                <input type="password" id="password1" name="password1" required/>
+                <label for="password2">Confirm Password</label>
+                <input type="password" id="password2" name="password2" required/>
+                <button id="registercheck" type="submit"> Register Customer </button>
+            </form>
+        </div>
+    </div>
+      </div>
+      <div id="viewReservedTables" class="view">
+        <h2>View Reserved Tables</h2>
+        <button class="reserve-btn" onclick="showView('registerReservation')">
+          Reserve New Table
+        </button>
+        <table id="reservedTablesList">
+          <thead>
+            <tr>
+              <th>Reservation ID</th>
+              <th>Customer</th>
+              <th>Table</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Guests</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div id="registerReservation" class="view">
+        <div class="form-container">
+          <h2>Reserve a Table</h2>
+          <form id="reserveTableForm">
+            <input type="hidden" id="reservation_id" />
+            <label for="customer">Customer:</label>
+            <select id="customer" name="customer" required>
+              <!-- Populate with customer data -->
+            </select>
+
+            <label for="table">Table:</label>
+            <select id="tablelist" name="table" required>
+              <!-- Populate with table data -->
+            </select>
+
+            <label for="booktable_date">Date:</label>
+            <input
+              type="date"
+              id="booktable_date"
+              name="booktable_date"
+              required
+            />
+
+            <label for="booktable_time">Time:</label>
+            <input
+              type="time"
+              id="booktable_time"
+              name="booktable_time"
+              required
+            />
+
+            <label for="booktable_guests">Number of Guests:</label>
+            <input
+              type="number"
+              id="booktable_guests"
+              name="booktable_guests"
+              required
+            />
+
+            <button id="reservetable" type="submit">Reserve Table</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function getCookie(name) {
+        const cookieName = `${name}=`;
+        const cookies = document.cookie.split(";");
+        for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.indexOf(cookieName) === 0) {
+            return cookie.substring(cookieName.length, cookie.length);
+          }
+        }
+        return null;
+      }
+
+      // Function to check if the user is already logged in
+      function checkSession() {
+        const sessionId = getCookie("sessionid");
+        const csrftoken = getCookie("csrftoken");
+
+        // Adjust cookie name if necessary
+        console.log("Retrieved csrftoken:", csrftoken); // Debug output
+
+        console.log("Retrieved session ID:", sessionId); // Debug output
+        if (!sessionId) {
+          console.log("Session ID exists. Redirecting to dashboard.");
+          window.location.href = "http://127.0.0.1:8000/";
+        } else {
+          console.log("session ID found");
+        }
+      }
+ function showMessage(text) {
+        const messageElement = document.getElementById("message");
+        const messageTextElement = document.getElementById("message-text");
+
+        messageTextElement.textContent = text;
+        messageElement.style.display = "block";
+
+        setTimeout(() => {
+          messageElement.style.display = "none";
+        }, 10000); // Hide after 5 seconds
+      }
+      // Call checkSession on page load
+      window.onload = checkSession;
+      function showView(viewId) {
+        // Hide all views
+        var views = document.getElementsByClassName("view");
+        for (var i = 0; i < views.length; i++) {
+          views[i].classList.remove("active");
+        }
+        // Show the selected view
+        document.getElementById(viewId).classList.add("active");
+
+        // Fetch data for viewRegisteredTables when it's shown
+        if (viewId === "viewRegisteredTables") {
+          fetchTables();
+        }
+
+        // Fetch data for viewReservedTables when it's shown
+        if (viewId === "viewReservedTables") {
+          fetchReservedTables();
+        }
+
+        // Fetch customer and table data when the reserve table form is shown
+       if (viewId === 'viewRegisteredCustomers') {
+            fetchRegisteredcustomers();
+        }
+        // Fetch customer and table data when the reserve table form is shown
+        if (viewId === 'registerReservation') {
+            fetchCustomers();
+            // fetchTables();
+            fetchtablelist();
+        }
+    }
+      
+
+      async function logout() {
+        try {
+          const response = await fetch("http://127.0.0.1:8000/api/logout/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.status === 200) {
+            alert("Logout successful!");
+            window.location.href = "http://127.0.0.1:8000/"; // Redirect to homepage
+          } else {
+            const result = await response.json();
+            alert(result.error || "Logout failed!");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred. Please try again.");
+        }
+      }
+
+      document
+        .getElementById("registerTableForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          var tableId = document.getElementById("table_id").value;
+          var tableName = document.getElementById("table_name").value;
+          var tableMaxGuests =document.getElementById("table_max_guests").value;
+          const csrftoken = getCookie("csrftoken");
+          console.log(" table id",tableId)
+          console.log(" tableMaxGuests",tableMaxGuests)
+
+
+          var url = tableId
+            ? `http://127.0.0.1:8000/api/tables/update/${tableId}/`
+            : "http://127.0.0.1:8000/api/tables/create/";
+          var method = tableId ? "PUT" : "POST";
+          console.log(" url",url)
+
+          fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken, // Include CSRF token
+            },
+
+            body: JSON.stringify({
+              table_name: tableName,
+              table_max_guests: tableMaxGuests,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              showMessage(
+                tableId
+                  ? "Table updated successfully!"
+                  : "Table registered successfully!"
+              );
+              document.getElementById("registerTableForm").reset();
+              document.getElementById("table_id").value = "";
+              showView("viewRegisteredTables");
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Failed to register/update table.");
+            });
+        });
+
+      function fetchTables() {
+        fetch("http://127.0.0.1:8000/api/tables/")
+          .then((response) => response.json())
+          .then((data) => {
+            var tableBody = document
+              .getElementById("tablesList")
+              .getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = "";
+            data.forEach((table) => {
+              var row = tableBody.insertRow();
+              row.insertCell(0).innerHTML = table.table_id;
+              row.insertCell(1).innerHTML = table.table_name;
+              row.insertCell(2).innerHTML = table.table_max_guests;
+              var actionsCell = row.insertCell(3);
+              actionsCell.innerHTML = `
+                    <button class="edit-btn" onclick="editTable(${table.table_id}, '${table.table_name}', ${table.table_max_guests})">Edit</button>
+                    <button class="delete-btn" onclick="deleteTable(${table.table_id})">Delete</button>
+                `;
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      function editTable(tableId, name, maxGuests) {
+        document.getElementById("table_id").value = tableId;
+        document.getElementById("table_name").value = name;
+        document.getElementById("table_max_guests").value = maxGuests;
+          document.getElementById("registerTableButton").innerText = "Update Table"; // Change button text to "Update"
+
+        showView("registerTables");
+      }
+
+      function deleteTable(tableId) {
+        if (confirm("Are you sure you want to delete this table?")) {
+          const csrftoken = getCookie("csrftoken");
+
+          fetch(`http://127.0.0.1:8000/api/tables/${tableId}/`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken, // Include CSRF token
+            }, // Include CSRF token
+          })
+            .then((response) => {
+              if (response.ok) {
+                showMessage("Table deleted successfully!");
+                fetchTables();
+              } else {
+                alert("Failed to delete table.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Failed to delete table.");
+            });
+        }
+      }
+
+      function fetchReservedTables() {
+        fetch("http://127.0.0.1:8000/api/booktables/")
+          .then((response) => response.json())
+          .then((data) => {
+            var tableBody = document
+              .getElementById("reservedTablesList")
+              .getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = "";
+            data.forEach((reservation) => {
+              var row = tableBody.insertRow();
+              row.insertCell(0).innerHTML = reservation.booktable_id;
+              row.insertCell(1).innerHTML = reservation.customer;
+              row.insertCell(2).innerHTML = reservation.table;
+              row.insertCell(3).innerHTML = reservation.booktable_date;
+              row.insertCell(4).innerHTML = reservation.booktable_time;
+              row.insertCell(5).innerHTML = reservation.booktable_guests;
+              var actionsCell = row.insertCell(6);
+              actionsCell.innerHTML = `
+                    <button class="edit-btn" onclick="editReservation(${reservation.booktable_id}, ${reservation.customer}, ${reservation.table}, '${reservation.booktable_date}', '${reservation.booktable_time}', ${reservation.booktable_guests})">Edit</button>
+                    <button class="delete-btn" onclick="deleteReservation(${reservation.booktable_id})">Delete</button>
+                `;
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      document
+        .getElementById("reserveTableForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          var reservationId = document.getElementById("reservation_id").value;
+          var customer = document.getElementById("customer").value;
+          var table = document.getElementById("tablelist").value;
+          var date = document.getElementById("booktable_date").value;
+          var time = document.getElementById("booktable_time").value;
+          var guests = document.getElementById("booktable_guests").value;
+      
+          var url = reservationId
+            ? `http://127.0.0.1:8000/api/booktable/update/${reservationId}/`
+            : "http://127.0.0.1:8000/api/booktable/create/";
+          var method = reservationId ? "PUT" : "POST";
+          csrftoken=getCookie("csrftoken");
+
+          fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken, // Include CSRF token
+            },
+            body: JSON.stringify({
+              customer: customer,
+              table: table,
+              booktable_date: date,
+              booktable_time: time,
+              booktable_guests: guests,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Data",data)
+              showMessage(
+                reservationId
+                  ? "Reservation updated successfully!"
+                  : "Reservation made successfully!"
+              );
+              document.getElementById("reserveTableForm").reset();
+              document.getElementById("reservation_id").value = "";
+              showView("viewReservedTables");
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Failed to make/update reservation.");
+            });
+        });
+
+      function editReservation(
+        reservationId,
+        customerId,
+        tableId,
+        date,
+        time,
+        guests
+      ) {
+        document.getElementById("reservation_id").value = reservationId;
+        document.getElementById("customer").value = customerId;
+        document.getElementById("tablelist").value = tableId;
+        document.getElementById("booktable_date").value = date;
+        document.getElementById("booktable_time").value = time;
+        document.getElementById("booktable_guests").value = guests;
+       document.getElementById("reservetable").innerText = "Update Booking"; // Change button text to "Update"
+
+        showView("registerReservation");
+      }
+
+      function deleteReservation(reservationId) {
+        if (confirm("Are you sure you want to delete this reservation?")) {
+          csrftoken=getCookie("csrftoken")
+          fetch(`http://127.0.0.1:8000/api/booktable/${reservationId}/`, {
+            method: "DELETE",
+             headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken, // Include CSRF token
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                showMessage("Reservation deleted successfully!")
+                fetchReservedTables();
+              } else {
+                                showMessage("Failed to delete reservation!")
+
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Failed to delete reservation.");
+            });
+        }
+      }
+
+      function fetchCustomers() {
+        fetch("http://127.0.0.1:8000/api/customers/")
+          .then((response) => response.json())
+          .then((data) => {
+            var customerSelect = document.getElementById("customer");
+            customerSelect.innerHTML = "";
+            data.forEach((customer) => {
+              var option = document.createElement("option");
+              option.value = customer.customer_id;
+              option.text = customer.customer_username;
+              customerSelect.appendChild(option);
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+      function fetchtablelist() {
+        fetch("http://127.0.0.1:8000/api/tables/")
+          .then((response) => response.json())
+          .then((data) => {
+            var customerSelect = document.getElementById("tablelist");
+            customerSelect.innerHTML = "";
+            data.forEach((tablelist) => {
+              var option = document.createElement("option");
+              option.value = tablelist.table_id;
+              option.text = tablelist.table_name + ' (' + tablelist.table_max_guests + ' Persons )';
+              customerSelect.appendChild(option);
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+      function fetchRegisteredcustomers() {
+        fetch('http://127.0.0.1:8000/api/customers/')
+        .then(response => response.json())
+        .then(data => {
+            var tableBody = document.getElementById('reservedCustomersList').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            data.forEach(customer => {
+                var row = tableBody.insertRow();
+                row.insertCell(0).innerHTML = customer.customer_id;
+                row.insertCell(1).innerHTML = customer.customer_username;
+                row.insertCell(2).innerHTML = customer.customer_email;
+                var actionsCell = row.insertCell(3);
+                actionsCell.innerHTML = `
+                    <button class="edit-btn" onclick="editCustomer(${customer.customer_id}, '${customer.customer_username}', '${customer.customer_email}')">Edit</button>
+                    <button class="delete-btn" onclick="deleteCustomer(${customer.customer_id})">Delete</button>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    document.getElementById('registerCustomerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        console.log("customer data1");
+        var CustomerId = document.getElementById('customertest_id').value;
+        var username = document.getElementById('username').value;
+        var email = document.getElementById('email').value;
+        var password1 = document.getElementById('password1').value;
+        var password2 = document.getElementById('password2').value;
+        console.log("Customer Data",CustomerId,username,email,password1)
+        console.log("customer data2",CustomerId);
+        if (password1 !== password2) {
+          alert("Passwords do not match!");
+          return;
+        }
+
+        var url = CustomerId ? `http://127.0.0.1:8000/api/customer/update/${CustomerId}/` : "http://127.0.0.1:8000/api/customers/create/";
+        var method = CustomerId ? 'PUT' : 'POST';
+                console.log("Customer ID",CustomerId);
+       console.log("Url",url)
+        console.log("method",method)
+        csrftoken=getCookie('csrftoken');
+        
+        fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken, // Include CSRF token
+            },
+            body: JSON.stringify({
+              
+          customer_username: username,
+          customer_email: email,
+          customer_password: password1,
+    
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log("Data from backend",data)
+            showMessage(CustomerId ? 'Customer updated successfully!' : 'Customer registration successfully!');
+            document.getElementById('registerCustomerForm').reset();
+            document.getElementById('customertest_id').value = '';
+            showView('viewRegisteredCustomers');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Failed to make/update registration.');
+        });
+    });
+
+    function deleteCustomer(CustomerId) {
+        if (confirm('Are you sure you want to delete this Customer?')) {
+          csrftoken=getCookie("csrftoken")
+            fetch(`http://127.0.0.1:8000/api/customer/${CustomerId}`, {
+                method: 'DELETE',
+                 headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken, // Include CSRF token
+            },
+                
+            })
+            .then(response => {
+                if (response.ok) {
+                    showMessage('Customer deleted successfully!');
+                    fetchRegisteredcustomers();
+                } else {
+                    showMessage('Failed to delete Customer.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Failed to delete Customer.');
+            });
+        }
+    }
+    function editCustomer(customerId, customer_username, customer_email) {
+      console.log("edit customer1",customerId);
+        document.getElementById('customertest_id').value = customerId;
+        document.getElementById('username').value = customer_username;
+        document.getElementById('email').value = customer_email;
+  document.getElementById("registercheck").innerText = "Update Customer"; // Change button text to "Update"
+
+        registercheck
+        showView('registerCustomer');
+    }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        /* background-color: #f4f4f4; */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .register-container {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px;
+        box-sizing: border-box;
+      }
+      .register-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+      .register-container form {
+        display: flex;
+        flex-direction: column;
+      }
+      .register-container form input {
+        margin-bottom: 15px;
+        padding: 15px;
+        font-size: 18px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .register-container form button {
+        padding: 15px;
+        font-size: 18px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .register-container form button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+    <script>
+      async function registerUser(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const data = {
+          username: formData.get("username"),
+          email: formData.get("email"),
+          password: formData.get("password1"),
+          // password2: formData.get("password2"),
+        };
+        console.log("Form data here ", data);
+        try {
+          const response = await fetch("http://127.0.0.1:8000/api/customer/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.status === 201) {
+            alert("Registration successful!");
+            window.location.href = "http://127.0.0.1:8000/api/loginform/"; // Redirect to the correct login page
+          } else {
+            const result = await response.json();
+            alert(result.error || "Registration failed!");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred. Please try again.");
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="register-container">
+      <h2>Register</h2>
+      <form id="register-form" onsubmit="registerUser(event)">
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input
+          type="password"
+          name="password1"
+          placeholder="Password"
+          required
+        />
+        <input
+          type="password"
+          name="password2"
+          placeholder="Confirm Password"
+          required
+        />
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  </body>
+</html>
