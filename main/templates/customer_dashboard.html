@@ -408,7 +408,7 @@
       }
       // Function to fetch customer ID based on email
       function getCustomerId(email) {
-        return fetch(`https://restaurant-booking-no1-ae7b2991e60d.herokuapp.com/api/customers/`)
+        return fetch(`/api/customers/`)
           .then((response) => response.json())
           .then((data) => {
             const customer = data.find(
@@ -463,7 +463,7 @@
         // Remove the customer email from local storage
         localStorage.removeItem("adminEmail");
 
-        window.location.href = "https://restaurant-booking-no1-ae7b2991e60d.herokuapp.com/";
+        window.location.href = "/";
         // Redirect to the homepage page
       }
       // Function to validate the number of guests against the table's max capacity
