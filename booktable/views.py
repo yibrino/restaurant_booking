@@ -95,9 +95,9 @@ class BookTableViewSet(viewsets.ModelViewSet):
         if not booktable_date or not booktable_time or not booktable_guests or not table_id :
             return Response({"error": "Missing required fields."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if a table with the same date already exists
-        # if BookTable.objects.filter(table=table_id, booktable_date=booktable_date).exists():
-        #     return Response({"error": "Table already booked for this date."}, status=status.HTTP_400_BAD_REQUEST)
+        # Check if a table with the same date and time already exists, excluding the current booking
+        if BookTable.objects.filter(table=table_id, booktable_date=booktable_date, booktable_time=booktable_time).exclude(pk=pk).exists():
+            return Response({"error": "Table already booked for this date and time."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = BookTableSerializer(booktable, data=request.data, partial=True)  # Use partial=True for partial updates
         if serializer.is_valid():

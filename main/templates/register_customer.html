@@ -15,12 +15,11 @@
         align-items: center;
         height: 100vh;
       }
-      .Already-account{
+      .Already-account {
         text-align: center;
         margin-bottom: 20px;
         font-size: 16px;
         color: #333;
-
       }
       .register-container {
         background: white;
@@ -193,7 +192,7 @@
 
           if (response.ok) {
             showMessage("Registration successful!");
-            window.location.href = "http://127.0.0.1:8000/customer/"; // Redirect to login page
+            window.location.href = "/customer/"; // Redirect to login page
           } else {
             const result = await response.json();
             showMessage(result.error || "Registration failed!");

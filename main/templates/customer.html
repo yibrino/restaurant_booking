@@ -152,7 +152,7 @@
 
         try {
           const response = await fetch(
-            "http://127.0.0.1:8000/api/customer/login/", // Adjust endpoint as needed
+            "https://restaurant-booking-no1-ae7b2991e60d.herokuapp.com/api/customer/login/", // Adjust endpoint as needed
             {
               method: "POST",
               headers: {
@@ -169,7 +169,7 @@
             localStorage.setItem("customerEmail", email);
 
             showMessage("Login successful!");
-            window.location.href = "http://127.0.0.1:8000/customer/dashboard/";
+            window.location.href = "https://restaurant-booking-no1-ae7b2991e60d.herokuapp.com/customer/dashboard/";
             // Redirect to home or dashboard
           } else {
             const result = await response.json();

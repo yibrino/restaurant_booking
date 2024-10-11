@@ -336,7 +336,7 @@
         console.log("Retrieved session ID:", sessionId); // Debug output
         if (!sessionId) {
           console.log("Session ID exists. Redirecting to dashboard.");
-          window.location.href = "http://127.0.0.1:8000/";
+          window.location.href = "/";
         } else {
           console.log("session ID found");
         }
@@ -388,7 +388,7 @@
 
       async function logout() {
         try {
-          const response = await fetch("http://127.0.0.1:8000/api/logout/", {
+          const response = await fetch("/api/logout/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -397,7 +397,7 @@
 
           if (response.status === 200) {
             alert("Logout successful!");
-            window.location.href = "http://127.0.0.1:8000/"; // Redirect to homepage
+            window.location.href = "/"; // Redirect to homepage
           } else {
             const result = await response.json();
             alert(result.error || "Logout failed!");
@@ -422,8 +422,8 @@
 
 
           var url = tableId
-            ? `http://127.0.0.1:8000/api/tables/update/${tableId}/`
-            : "http://127.0.0.1:8000/api/tables/create/";
+            ? `/api/tables/update/${tableId}/`
+            : "/api/tables/create/";
           var method = tableId ? "PUT" : "POST";
           console.log(" url",url)
 
@@ -457,7 +457,7 @@
         });
 
       function fetchTables() {
-        fetch("http://127.0.0.1:8000/api/tables/")
+        fetch("/api/tables/")
           .then((response) => response.json())
           .then((data) => {
             var tableBody = document
@@ -494,7 +494,7 @@
         if (confirm("Are you sure you want to delete this table?")) {
           const csrftoken = getCookie("csrftoken");
 
-          fetch(`http://127.0.0.1:8000/api/tables/${tableId}/`, {
+          fetch(`/api/tables/${tableId}/`, {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
@@ -517,7 +517,7 @@
       }
 
       function fetchReservedTables() {
-        fetch("http://127.0.0.1:8000/api/booktables/")
+        fetch("/api/booktables/")
           .then((response) => response.json())
           .then((data) => {
             var tableBody = document
@@ -557,8 +557,8 @@
           var guests = document.getElementById("booktable_guests").value;
       
           var url = reservationId
-            ? `http://127.0.0.1:8000/api/booktable/update/${reservationId}/`
-            : "http://127.0.0.1:8000/api/booktable/create/";
+            ? `/api/booktable/update/${reservationId}/`
+            : "/api/booktable/create/";
           var method = reservationId ? "PUT" : "POST";
           csrftoken=getCookie("csrftoken");
 
@@ -616,7 +616,7 @@
       function deleteReservation(reservationId) {
         if (confirm("Are you sure you want to delete this reservation?")) {
           csrftoken=getCookie("csrftoken")
-          fetch(`http://127.0.0.1:8000/api/booktable/${reservationId}/`, {
+          fetch(`/api/booktable/${reservationId}/`, {
             method: "DELETE",
              headers: {
               "Content-Type": "application/json",
@@ -640,7 +640,7 @@
       }
 
       function fetchCustomers() {
-        fetch("http://127.0.0.1:8000/api/customers/")
+        fetch("/api/customers/")
           .then((response) => response.json())
           .then((data) => {
             var customerSelect = document.getElementById("customer");
@@ -657,7 +657,7 @@
           });
       }
       function fetchtablelist() {
-        fetch("http://127.0.0.1:8000/api/tables/")
+        fetch("/api/tables/")
           .then((response) => response.json())
           .then((data) => {
             var customerSelect = document.getElementById("tablelist");
@@ -674,7 +674,7 @@
           });
       }
       function fetchRegisteredcustomers() {
-        fetch('http://127.0.0.1:8000/api/customers/')
+        fetch('/api/customers/')
         .then(response => response.json())
         .then(data => {
             var tableBody = document.getElementById('reservedCustomersList').getElementsByTagName('tbody')[0];
@@ -711,7 +711,7 @@
           return;
         }
 
-        var url = CustomerId ? `http://127.0.0.1:8000/api/customer/update/${CustomerId}/` : "http://127.0.0.1:8000/api/customers/create/";
+        var url = CustomerId ? `/api/customer/update/${CustomerId}/` : "/api/customers/create/";
         var method = CustomerId ? 'PUT' : 'POST';
                 console.log("Customer ID",CustomerId);
        console.log("Url",url)
@@ -749,7 +749,7 @@
     function deleteCustomer(CustomerId) {
         if (confirm('Are you sure you want to delete this Customer?')) {
           csrftoken=getCookie("csrftoken")
-            fetch(`http://127.0.0.1:8000/api/customer/${CustomerId}`, {
+            fetch(`/api/customer/${CustomerId}`, {
                 method: 'DELETE',
                  headers: {
               "Content-Type": "application/json",

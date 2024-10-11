@@ -378,7 +378,7 @@
       let maximum_guest;
       if (!localStorage.getItem("customerEmail")) {
         showMessage("Pease Login first");
-        window.location.href = "http://127.0.0.1:8000/";
+        window.location.href = "/";
       }
       // Function to show tab content based on selected tab
       function showTab(tabName) {
@@ -408,7 +408,7 @@
       }
       // Function to fetch customer ID based on email
       function getCustomerId(email) {
-        return fetch(`http://127.0.0.1:8000/api/customers/`)
+        return fetch(`https://restaurant-booking-no1-ae7b2991e60d.herokuapp.com/api/customers/`)
           .then((response) => response.json())
           .then((data) => {
             const customer = data.find(
@@ -424,7 +424,7 @@
 
       // Function to fetch and populate table options
       function populateTableOptions() {
-        return fetch("http://127.0.0.1:8000/api/tables/")
+        return fetch("/api/tables/")
           .then((response) => response.json())
           .then((tables) => {
             const tableSelects = document.querySelectorAll(
@@ -463,12 +463,12 @@
         // Remove the customer email from local storage
         localStorage.removeItem("adminEmail");
 
-        window.location.href = "http://127.0.0.1:8000/";
+        window.location.href = "https://restaurant-booking-no1-ae7b2991e60d.herokuapp.com/";
         // Redirect to the homepage page
       }
       // Function to validate the number of guests against the table's max capacity
       function validateGuestCount(tableid) {
-        return fetch("http://127.0.0.1:8000/api/tables/")
+        return fetch("/api/tables/")
           .then((response) => response.json())
           .then((data) => {
             const table = data.find((table) => table.table_id === tableid);
@@ -516,7 +516,7 @@
                 };
                 console.log("Booking Data", bookingData);
 
-                return fetch("http://127.0.0.1:8000/api/booktable/create/", {
+                return fetch("/api/booktable/create/", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -557,7 +557,7 @@
 
         // Function to fetch and map table names
         function getTablesMap() {
-          return fetch(`http://127.0.0.1:8000/api/tables/`)
+          return fetch(`/api/tables/`)
             .then((response) => response.json())
             .then((tables) => {
               // Map table IDs to table names
@@ -572,7 +572,7 @@
           .then((customerId) => {
             return getTablesMap()
               .then(() => {
-                return fetch(`http://127.0.0.1:8000/api/booktables/`);
+                return fetch(`/api/booktables/`);
               })
               .then((response) => response.json())
               .then((bookings) => {
@@ -614,7 +614,7 @@
 
       // Function to submit updated booking
       function updateBooking(bookingId) {
-        fetch(`http://127.0.0.1:8000/api/booktable/${bookingId}/`)
+        fetch(`/api/booktable/${bookingId}/`)
           .then((response) => response.json())
           .then((booking) => {
             document.getElementById("update-booking-id").value = bookingId;
@@ -676,7 +676,7 @@
               booktable_guests: booktable_guests,
             };
 
-            fetch(`http://127.0.0.1:8000/api/booktable/update/${bookingId}/`, {
+            fetch(`/api/booktable/update/${bookingId}/`, {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",
@@ -715,7 +715,7 @@
         // Confirm cancellation
         {
           console.log("Booking Id", bookingId);
-          fetch(`http://127.0.0.1:8000/api/booktable/${bookingId}/`, {
+          fetch(`/api/booktable/${bookingId}/`, {
             method: "DELETE",
           })
             .then((response) => {

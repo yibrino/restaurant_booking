@@ -74,7 +74,7 @@
         console.log("Retrieved session ID:", sessionId); // Debug output
         if (sessionId) {
           console.log("Session ID exists. Redirecting to dashboard.");
-          window.location.href = "http://127.0.0.1:8000/admin/dashboard/";
+          window.location.href = "/adminlogin/dashboard/";
         } else {
           console.log("No session ID found. Allowing login.");
         }
@@ -94,7 +94,7 @@
         };
         console.log("Attempting login with data:", data);
         try {
-          const response = await fetch("http://127.0.0.1:8000/api/login/", {
+          const response = await fetch("/api/login/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -105,7 +105,7 @@
           if (response.status === 200) {
             alert("Login successful!");
 
-            window.location.href = "http://127.0.0.1:8000/admin/dashboard/"; // Redirect to dashboard
+            window.location.href = "/adminlogin/dashboard/"; // Redirect to dashboard
           } else {
             const result = await response.json();
             alert(result.error || "Login failed!");

@@ -18,7 +18,7 @@ from django.urls import path, include
 from main.views import homepage,customer_page,admin_page,admin_dashboard,customer_dashboard,customer_register,about_page
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api/', include('user.urls')),
     path('api/',include('customers.urls')),
     path('api/',include('tablelist.urls')),
@@ -27,8 +27,8 @@ urlpatterns = [
     path('about/', about_page, name='about_page'),
  
       path('customer/', customer_page, name='customer_page'),
-    path('admin/', admin_page, name='admin_page'),# Set the homepage view as the root URL
-        path('admin/dashboard/', admin_dashboard, name='admin_dashboard'),
+    path('adminlogin/', admin_page, name='admin_page'),# Set the homepage view as the root URL
+        path('adminlogin/dashboard/', admin_dashboard, name='admin_dashboard'),
 
         path('customer/dashboard/', customer_dashboard, name='customer_dashboard'),
 
