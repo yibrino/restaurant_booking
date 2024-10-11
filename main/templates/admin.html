@@ -92,20 +92,22 @@
           email: formData.get("email"),
           password: formData.get("password"),
         };
-        console.log("Attempting login with data:", data);
+
+        const csrftoken = getCookie("csrftoken"); // Get CSRF token from cookies
+
         try {
           const response = await fetch("/api/login/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken, // Include CSRF token in the header
             },
             body: JSON.stringify(data),
           });
 
           if (response.status === 200) {
             alert("Login successful!");
-
-            window.location.href = "/adminlogin/dashboard/"; // Redirect to dashboard
+            window.location.href = "/adminlogin/dashboard/";
           } else {
             const result = await response.json();
             alert(result.error || "Login failed!");

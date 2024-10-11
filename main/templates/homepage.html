@@ -20,85 +20,145 @@
         transition: background-color 0.5s ease-in-out;
       }
       .navbar {
+        background-color: #1f2937; /* Tailwind's bg-gray-800 */
+        padding: 10px 20px;
         display: flex;
-        background-color: rgba(0, 0, 0, 0.7);
-        overflow: hidden;
+        justify-content: space-between;
+        align-items: center;
         position: fixed;
         top: 0;
         width: 100%;
         z-index: 1000;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
       }
+
       .navbar a {
-        flex: 1;
-        padding: 16px;
-        text-align: center;
-        text-decoration: none;
-        color: white;
-        font-weight: bold;
-        transition: background-color 0.3s, transform 0.3s;
+        color: #d1d5db; /* Tailwind's text-gray-300 */
+        padding: 10px 15px;
+        margin-left: 20px;
+        margin-right: 20px;
+        text-decoration: none; /* Remove underline */
+        font-weight: 500;
+        font-size: 14px;
+        transition: background-color 0.3s, color 0.3s;
       }
+
       .navbar a:hover {
-        background-color: #5a9bd4;
-        color: #fff;
-        transform: scale(1.05);
+        background-color: #374151; /* Tailwind's hover:bg-gray-700 */
+        color: #fff; /* Tailwind's hover:text-white */
       }
+
       .navbar a.active {
-        background-color: #5a9bd4;
-        color: #fff;
+        background-color: #111827; /* Tailwind's bg-gray-900 */
+        color: white;
       }
-      .navbar .hamburger {
+
+      .hamburger {
         display: none;
         cursor: pointer;
         font-size: 24px;
-        color: white;
-        padding: 16px;
+        color: #d1d5db;
       }
-      .menu-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        z-index: 1001;
-        color: white;
-        padding: 50px 20px;
-        box-sizing: border-box;
-        overflow-y: auto;
-        transition: opacity 0.3s ease;
+
+      .navbar .logo img {
+        height: 40px;
+        width: auto;
       }
-      .menu-overlay.active {
-        display: block;
+
+      /* Mobile Menu CSS */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background-color: #1f2937;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; /* Sidebar width */
+  height: 100%; /* Full height */
+  padding-top: 50px; /* Space at the top for the close button */
+  z-index: 1000;
+  align-items: flex-start; /* Align items to the left */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Add a slight shadow for the menu */
+}
+
+.mobile-menu a {
+  display: block;
+  padding: 10px 20px;
+  color: #d1d5db;
+  text-align: left; /* Align text to the left */
+  text-decoration: none; /* Remove underline */
+  width: 100%; /* Make the link fill the width */
+}
+
+.mobile-menu a:hover {
+  background-color: #374151;
+}
+
+.mobile-menu a.active {
+  background-color: #111827;
+}
+
+/* Close Icon */
+.mobile-menu .close-icon {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  color: #d1d5db;
+  cursor: pointer;
+}
+
+      @media (max-width: 768px) {
+       .navbar .nav-links {
+    display: none;
+  }
+  .hamburger {
+    display: block;
+  }
+  .mobile-menu.active {
+    display: flex;
+  }
+  .logo{
+    display: none;
+  }
+
+        
+    
       }
-      .menu-overlay .close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 36px;
-        cursor: pointer;
-      }
-      .menu-overlay a {
-        display: block;
-        padding: 16px;
-        text-decoration: none;
-        color: white;
-        font-weight: bold;
-        text-align: center;
-        transition: background-color 0.3s, transform 0.3s;
-      }
-      .menu-overlay a:hover {
-        background-color: #5a9bd4;
-        transform: scale(1.05);
-      }
+
       .content {
         position: relative;
         padding: 20px;
         padding-top: 70px;
         text-align: center;
+      }
+     .contact {
+  margin: 0 auto;  /* This will center the element horizontally */
+  width: fit-content;  /* Or set a specific width if needed */
+  align-items: center;  /* This works with flexbox or grid parents */
+  justify-content: center;  /* This works with flexbox or grid parents */
+}
+
+      .view {
+        display: none;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        transform: translateY(20px);
+      }
+      .view.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .content h1,
+      .content h2 {
+        font-size: 36px;
+        color: #fff;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+      }
+      .content p {
+        font-size: 18px;
+        color: #eee;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
       }
       .view {
         display: none;
@@ -335,35 +395,46 @@
     </style>
   </head>
   <body>
-    <div class="navbar">
-      <div class="hamburger">&#9776;</div>
-      <a href="#home" class="active">Home</a>
-      <a href="#gallery">Gallery</a>
-      <a href="#menu">Menu</a>
-      <a href="#contact">Contact</a>
-    </div>
-    <div class="menu-overlay">
-      <div class="close">&times;</div>
-      <a href="#home" class="active">Home</a>
-      <a href="#gallery">Gallery</a>
-      <a href="#menu">Menu</a>
-      <a href="#contact">Contact</a>
-    </div>
+    <nav class="navbar">
+      <div class="logo">
+  <img
+  src="https://via.placeholder.com/150x50?text=Restaurant+No1+Logo"
+  alt="Restaurant No1"
+/>
+
+
+      </div>
+      <div class="nav-links">
+        <a href="#home" class="active">Home</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#menu">Menu</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+    </nav>
+
+    <!-- Mobile Menu -->
+   <div class="mobile-menu" id="mobile-menu">
+  <span class="close-icon" onclick="toggleMenu()">&#10006;</span> <!-- Close icon -->
+  <a href="#home" class="active">Home</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#menu">Menu</a>
+  <a href="#contact">Contact</a>
+</div>
+
     <div class="content">
       <div id="home" class="view active">
         <h1>Welcome to Restaurant No1</h1>
         <p>Experience the finest dining with us.</p>
         <div class="buttons">
-          <a href="{% url 'customer_page' %}">Log In</a>
+          <a href="#">Log In</a>
         </div>
         <div class="register-container">
           <span class="register-text">Register for exclusive offers</span>
-
-          <a href="{% url 'customer_register' %}" class="register"
-            >Register Now</a
-          >
+          <a href="#" class="register">Register Now</a>
         </div>
       </div>
+    </div>
       <div id="gallery" class="view">
         <div class="slider">
           <div class="slides">
@@ -467,7 +538,7 @@
         </div>
       </div>
       <div id="contact" class="view">
-        <h2>Contact Us</h2>
+        <h2 class="contact">Contact Us</h2>
         <div class="contact-form-container">
           <form action="#" method="post">
             <label for="name">Name:</label>
@@ -551,6 +622,48 @@
           .querySelector(".next")
           .addEventListener("click", () => changeSlide(1));
       });
+       function toggleMenu() {
+  const mobileMenu = document.getElementById("mobile-menu");
+  mobileMenu.classList.toggle("active");
+}
+
+// Function to handle section switching
+// Function to handle section switching
+function showSection(sectionId) {
+  const views = document.querySelectorAll(".view");
+  views.forEach((view) => {
+    view.classList.remove("active"); // Hide all sections
+  });
+
+  // Show the clicked section
+  document.getElementById(sectionId).classList.add("active");
+
+  // Remove the 'active' class from all mobile menu links
+  const mobileLinks = document.querySelectorAll(".mobile-menu a");
+  mobileLinks.forEach((link) => {
+    link.classList.remove("active"); // Remove active class from all links
+  });
+
+  // Add the 'active' class to the clicked mobile menu link
+  const activeLink = document.querySelector(`.mobile-menu a[href="#${sectionId}"]`);
+  if (activeLink) {
+    activeLink.classList.add("active"); // Set the active link background
+  }
+
+  // Hide mobile menu after clicking
+  const mobileMenu = document.getElementById("mobile-menu");
+  mobileMenu.classList.remove("active");
+}
+
+// Event listeners for mobile nav links
+document.querySelectorAll(".mobile-menu a").forEach((link) => {
+  link.addEventListener("click", function (e) {
+    e.preventDefault();
+    const targetId = this.getAttribute("href").substring(1); // Get the section id from href
+    showSection(targetId);
+  });
+});
+
     </script>
   </body>
 </html>

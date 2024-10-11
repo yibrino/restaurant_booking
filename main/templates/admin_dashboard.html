@@ -334,7 +334,7 @@
         console.log("Retrieved csrftoken:", csrftoken); // Debug output
 
         console.log("Retrieved session ID:", sessionId); // Debug output
-        if (!sessionId) {
+        if (!csrftoken) {
           console.log("Session ID exists. Redirecting to dashboard.");
           window.location.href = "/";
         } else {
